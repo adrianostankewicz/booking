@@ -1,5 +1,7 @@
 import { DateRange } from '../value_objects/date_range';
+import { Booking } from './booking';
 import { Property } from './property';
+import { User } from './user';
 
 describe('Property Entity', () => {
   it('deve criar uma instância de Property com todos os atributos', () => {
@@ -33,7 +35,7 @@ describe('Property Entity', () => {
   it('deve validar o numero máximo de hóspedes', () => {
     const property = new Property("1", "Casa de Praia", "Descrição", 4, 200);
     expect(() => {
-      property.validateMaxGuests(6);
+      property.validateGuestCount(6);
     }).toThrow(`Número máximo de hóspedes excedido. O máximo permitido é 4.`);
   });
 
@@ -46,8 +48,20 @@ describe('Property Entity', () => {
 
   it('deve aplicar desconto para estadias de 7 noites ou mais', () => {
     const property = new Property("1", "Casa de Praia", "Descrição", 4, 200);
-    const dateRange = new DateRange(new Date('2026-08-10'), new Date('2026-08-18')); // 7 noites
+    const dateRange = new DateRange(new Date('2026-08-10'), new Date('2026-08-17')); // 7 noites
     const totalPrice = property.calculateTotalPrice(dateRange);
     expect(totalPrice).toBe(1260); // 7 noites * 200 * 0.9 por noite
+  });
+
+  it('deve verificar disponibilidade da propriedade)', () => {
+    const property = new Property("1", "Casa de Praia", "Descrição", 4, 200);
+    const user = new User("1", "João");
+    const dateRange = new DateRange(new Date('2026-08-10'), new Date('2026-08-18'));
+    const dateRange2 = new DateRange(new Date('2026-08-15'), new Date('2026-08-20'));
+
+    new Booking("1", property, user, dateRange, 2);
+
+    expect(property.isAvailable(dateRange)).toBe(false);
+    expect(property.isAvailable(dateRange2)).toBe(false);
   });
 });
