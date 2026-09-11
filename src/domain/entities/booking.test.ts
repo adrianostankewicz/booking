@@ -62,4 +62,61 @@ describe('Booking Entity', () => {
       new Booking("790", property, user, dateRange2, 4);
     }).toThrow('A propriedade não está disponível para o período selecionado');
   });
+
+  it('deve cancelar uma reserva sem reembolso quando faltam menos de 1 dia para o check-in', () => {
+    const property = new Property('123', 'Casa de Praia', 'Uma bela casa na praia', 4, 300);
+    const user = new User('456', 'João Silva');
+    const dateRange = new DateRange(new Date('2024-07-20'), new Date('2024-07-22'));
+
+    const booking = new Booking('789', property, user, dateRange, 4);
+
+    const currentDate = new Date('2024-07-20');
+    booking.cancel(currentDate);
+    
+    expect(booking.getStatus()).toBe('CANCELLED');
+    expect(booking.getTotalPrice()).toBe(600);
+  });
+
+  it('deve cancelar uma reserva com reembolso total quando a data for superior a 7 dias antes do check-in', () => {
+    const property = new Property('123', 'Casa de Praia', 'Uma bela casa na praia', 4, 300);
+    const user = new User('456', 'João Silva');
+    const dateRange = new DateRange(new Date('2024-07-20'), new Date('2024-07-25'));
+
+    const booking = new Booking('789', property, user, dateRange, 4);
+
+    const currentDate = new Date('2024-07-10');
+    booking.cancel(currentDate);
+    
+    expect(booking.getStatus()).toBe('CANCELLED');
+    expect(booking.getTotalPrice()).toBe(0);
+  });
+
+  it('deve cancelar uma reserva com reembolso parcial quando a data estiver entre 1 a 7 dias antes do check-in', () => {
+    const property = new Property('123', 'Casa de Praia', 'Uma bela casa na praia', 4, 300);
+    const user = new User('456', 'João Silva');
+    const dateRange = new DateRange(new Date('2024-07-20'), new Date('2024-07-25'));
+
+    const booking = new Booking('789', property, user, dateRange, 4);
+
+    const currentDate = new Date('2024-07-15');
+    booking.cancel(currentDate);
+    
+    expect(booking.getStatus()).toBe('CANCELLED');
+    expect(booking.getTotalPrice()).toBe(300 * 5 * 0.5);
+  });
+
+  it('não deve permitir cancelar a mesma reserva mais de uma vez', () => {
+    const property = new Property('123', 'Casa de Praia', 'Uma bela casa na praia', 4, 300);
+    const user = new User('456', 'João Silva');
+    const dateRange = new DateRange(new Date('2024-07-20'), new Date('2024-07-25'));
+
+    const booking = new Booking('789', property, user, dateRange, 4);
+
+    const currentDate = new Date('2024-07-15');
+    booking.cancel(currentDate);
+    
+    expect(() => {
+      booking.cancel(currentDate);
+    }).toThrow('A reserva já está cancelada');
+  });
 });
