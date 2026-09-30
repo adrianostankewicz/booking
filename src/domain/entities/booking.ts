@@ -57,12 +57,20 @@ export class Booking {
     return this.dateRange;
   }
 
+  getGuestCount(): number {
+    return this.guestsCount;
+  }
+
   getGuests(): number {
     return this.guestsCount;
   }
 
   getTotalPrice(): number {
     return this.totalPrice;
+  }
+
+  getGuest(): User {
+    return this.guest;
   }
 
   getStatus(): 'CONFIRMED' | 'CANCELLED' {
