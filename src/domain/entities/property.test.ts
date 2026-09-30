@@ -17,7 +17,7 @@ describe('Property Entity', () => {
     expect(property.getName()).toBe("Casa de Praia");
     expect(property.getDescription()).toBe("Uma bela casa de praia com vista para o mar.");
     expect(property.getMaxGuests()).toBe(4);
-    expect(property.getPricePerNight()).toBe(200);
+    expect(property.getBasePricePerNight()).toBe(200);
   });
 
   it('deve lançar um erro se o nome for vazio', () => {

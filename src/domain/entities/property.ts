@@ -41,7 +41,7 @@ export class Property {
     return this.maxGuests;
   }
 
-  getPricePerNight(): number {
+  getBasePricePerNight(): number {
     return this.basePricePerNight;
   }
 
